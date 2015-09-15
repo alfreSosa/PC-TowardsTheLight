@@ -130,6 +130,10 @@ APlayerOvi::APlayerOvi() {
   //iteraction Tappables propierties
   m_isPickingAltar = m_isPickingPortal = m_isPushingButton = false;
   m_elapsedAltar = m_elapsedPortal = m_elapsedButton = 0.0f;
+
+  //tappable Reference
+  m_actualTappable = nullptr;
+
 }
 
 void APlayerOvi::BeginPlay(){
@@ -294,6 +298,7 @@ void APlayerOvi::SetupPlayerInputComponent(class UInputComponent* InputComponent
   InputComponent->BindAction("MoveLeft", IE_Released, this, &APlayerOvi::OnStopLeft);
   InputComponent->BindAction("Jump", IE_Pressed, this, &APlayerOvi::OnStartJump);
   InputComponent->BindAction("Jump", IE_Released, this, &APlayerOvi::OnStopJump);
+  InputComponent->BindAction("TapObject", IE_Released, this, &APlayerOvi::OnPressTappable);
 
   InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &APlayerOvi::TouchStarted);
   InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &APlayerOvi::TouchStarted);
@@ -356,6 +361,16 @@ void APlayerOvi::TouchEnd(const ETouchIndex::Type FingerIndex, const FVector Loc
   }
   else if (FingerIndex == m_fingerIndexOther)
     m_fingerIndexOther = ETouchIndex::Touch10;
+}
+
+void APlayerOvi::SetActualTappable(ATappable *object) {
+  m_actualTappable = object;
+}
+
+void APlayerOvi::OnPressTappable() {
+  if (m_actualTappable) {
+    m_actualTappable->Execute();
+  }
 }
 
 void APlayerOvi::OnStartRight() {

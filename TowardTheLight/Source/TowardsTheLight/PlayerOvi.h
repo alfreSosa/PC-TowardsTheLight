@@ -8,6 +8,7 @@
 class AMobilePlatform;
 class AStick;
 class ATowardsTheLightGameMode;
+class ATappable;
 
 UCLASS()
 class TOWARDSTHELIGHT_API APlayerOvi : public APawn
@@ -31,7 +32,7 @@ public:
   void EnabledPickPortal();
   void EnabledPickAltar();
   void ResetToCheckPoint(FTransform playerTransform, bool right);
-
+  void SetActualTappable(ATappable *object);
   //public editor functions
   UFUNCTION(BlueprintCallable, Category = "PlayerInputTTL")
 		void OnStartRight();
@@ -45,6 +46,8 @@ public:
     void OnStartJump();
   UFUNCTION(BlueprintCallable, Category = "PlayerInputTTL")
     void OnStopJump();
+  UFUNCTION(BlueprintCallable, Category = "PlayerInputTTL")
+    void OnPressTappable();
 
   //public Animations functions
   UFUNCTION(BlueprintCallable, Category = "PlayerLocomotion")
@@ -164,4 +167,8 @@ private:
   ETouchIndex::Type m_fingerIndexMovement;
   ETouchIndex::Type m_fingerIndexJump;
   ETouchIndex::Type m_fingerIndexOther;
+
+  //tappables references
+
+  ATappable *m_actualTappable;
 };

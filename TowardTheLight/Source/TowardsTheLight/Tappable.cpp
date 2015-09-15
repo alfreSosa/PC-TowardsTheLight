@@ -87,6 +87,7 @@ void ATappable::OnBeginTriggerOverlap(class AActor* OtherActor, class UPrimitive
     dif.Z = (dif.Z < 0) ? -dif.Z : dif.Z;
     if (dif.X < 0.05 && dif.Y < 0.05 && dif.Z < 0.05 && (!NeedKey || (NeedKey && m_player->HasKey() && ColorKey == m_player->GetColorKey()))){
       m_isPlayerOn = true;
+      m_player->SetActualTappable(this);
       Activate(true);
     }
   }
@@ -95,6 +96,7 @@ void ATappable::OnBeginTriggerOverlap(class AActor* OtherActor, class UPrimitive
 void ATappable::OnTriggerOverlapEnd(class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
   if (OtherActor->ActorHasTag("Player")){
     m_isPlayerOn = false;
+    m_player->SetActualTappable(nullptr);
     Activate(false);
   }
 }
