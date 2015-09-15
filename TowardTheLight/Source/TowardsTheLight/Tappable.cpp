@@ -96,7 +96,8 @@ void ATappable::OnBeginTriggerOverlap(class AActor* OtherActor, class UPrimitive
 void ATappable::OnTriggerOverlapEnd(class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
   if (OtherActor->ActorHasTag("Player")){
     m_isPlayerOn = false;
-    m_player->SetActualTappable(nullptr);
+    if (m_player)
+      m_player->SetActualTappable(nullptr);
     Activate(false);
   }
 }
