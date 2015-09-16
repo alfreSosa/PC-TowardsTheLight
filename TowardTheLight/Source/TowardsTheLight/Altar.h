@@ -8,17 +8,21 @@
 UCLASS()
 class TOWARDSTHELIGHT_API AAltar : public ATappable
 {
-	GENERATED_BODY()
-public:	
+  GENERATED_BODY()
+public:
   UPROPERTY(EditAnywhere, Category = Altar)
     bool GiveKey;
   UPROPERTY(EditAnywhere, Category = Altar)
     FLinearColor AltarColor;
+  UPROPERTY(EditAnywhere, Category = Altar)
+    FLinearColor DisableColor;
 
   AAltar();
   virtual void BeginPlay() override;
-  //virtual void Tick(float DeltaSeconds) override;
+  virtual void Tick(float DeltaSeconds) override;
   virtual void Activate(bool enabled);
   virtual void Execute();
   UMaterialInstanceDynamic *AltarMaterial;
+private:
+  bool m_colorControl;
 };

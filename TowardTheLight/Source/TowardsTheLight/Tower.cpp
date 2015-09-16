@@ -11,7 +11,7 @@
 ATower::ATower() {
   RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
   Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
-//  Body->SetWorldScale3D(FVector(2.5, 2.5, 2.5));
+  //  Body->SetWorldScale3D(FVector(2.5, 2.5, 2.5));
   RootComponent->SetMobility(EComponentMobility::Static);
   Body->SetMobility(EComponentMobility::Static);
   Body->CastShadow = false;
@@ -39,6 +39,7 @@ ATower::ATower() {
 
   NeedKey = false;
   ColorKey = FLinearColor(0.0f, 0.0f, 0.0f);
+  TimeRunes = 1.0f;
 
   TowerLightMaterial = ((UPrimitiveComponent*)GetRootComponent())->CreateAndSetMaterialInstanceDynamic(0);
   UMaterial* mat = nullptr;
@@ -66,6 +67,15 @@ ATower::ATower() {
     MaterialBB = UMaterialInstanceDynamic::Create(mat, GetWorld());
   }
 
+  TowerEntranceMaterial = ((UPrimitiveComponent*)GetRootComponent())->CreateAndSetMaterialInstanceDynamic(3);
+  UMaterial* mat3 = nullptr;
+  static ConstructorHelpers::FObjectFinder<UMaterial> MatEntranceFinder(TEXT("Material'/Game/Models/Entrance/Entrance_light_mat.Entrance_light_mat'"));
+  if (MatEntranceFinder.Succeeded())
+  {
+    mat3 = MatEntranceFinder.Object;
+    TowerEntranceMaterial = UMaterialInstanceDynamic::Create(mat3, GetWorld());
+  }
+
   EffectsBB = CreateDefaultSubobject<UMaterialBillboardComponent>(TEXT("BB"));
   EffectsBB->AttachTo(RootComponent);
   EffectsBB->CastShadow = false;
@@ -73,26 +83,35 @@ ATower::ATower() {
   m_startVictory = false;
   m_timeToFinish = 2.0f;
   m_elapsedTime = 0.0f;
-
+  m_elapsedTimeRunes = 0.0f;
 }
 
 // Called when the game starts or when spawned
 void ATower::BeginPlay() {
-	Super::BeginPlay();
+  Super::BeginPlay();
+
   Light->SetMaterial(0, TowerLightMaterial);
   Body->SetMaterial(0, TowerRunesMaterial);
+  Entrance->SetMaterial(0, TowerEntranceMaterial);
+
+
   TowerLightMaterial->SetVectorParameterValue("Color", ColorDisabled);
   TowerRunesMaterial->SetVectorParameterValue("ColorRunes", ColorKey);
+  TowerEntranceMaterial->SetVectorParameterValue("TowerDoor_color", ColorKey);
+
   RegisterDelegate();
   m_startVictory = false;
   m_timeToFinish = 2.0f;
   m_elapsedTime = 0.0f;
-
+  m_elapsedTimeRunes = 0.0f;
   EffectsBB->AddElement(MaterialBB, NULL, false, 100, 100, NULL);
   if (NeedKey)
     MaterialBB->SetVectorParameterValue("Bloom_Color", ColorKey);
   else
     MaterialBB->SetVectorParameterValue("Bloom_Color", FLinearColor(FVector(0.f)));
+
+  m_origin = ColorKey;
+  m_target = ColorDisabled;
 
   Cast<UInfoGameInstance>(GetGameInstance())->SetTowerNeedKey(NeedKey);
   Cast<UInfoGameInstance>(GetGameInstance())->SetTowerKeyColor(ColorKey);
@@ -101,7 +120,19 @@ void ATower::BeginPlay() {
 void ATower::Tick(float DeltaSeconds) {
   DeltaSeconds = TimeManager::Instance()->GetDeltaTime(DeltaSeconds);
   Super::Tick(DeltaSeconds);
-  
+
+  m_elapsedTimeRunes += DeltaSeconds;
+  float x = m_elapsedTimeRunes / TimeRunes;
+  x = (x > 1.0f) ? 1.0f : x;
+  FLinearColor actual = FMath::Lerp(m_origin, m_target, x);
+  TowerRunesMaterial->SetVectorParameterValue("ColorRunes", actual);
+  if (m_elapsedTimeRunes >= TimeRunes) {
+    m_elapsedTimeRunes = 0.0f;
+    FLinearColor sav = m_origin;
+    m_origin = m_target;
+    m_target = sav;
+  }
+
   if (m_startVictory) {
     float t = m_elapsedTime / m_timeToFinish;
     t = (t > 1.0f) ? 1.0f : t;

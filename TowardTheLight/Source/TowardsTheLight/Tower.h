@@ -8,14 +8,14 @@
 UCLASS()
 class TOWARDSTHELIGHT_API ATower : public APawn
 {
-	GENERATED_BODY()
+  GENERATED_BODY()
 
-public:	
-	// Sets default values for this actor's properties
-	ATower();
+public:
+  // Sets default values for this actor's properties
+  ATower();
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+  // Called when the game starts or when spawned
+  virtual void BeginPlay() override;
   virtual void Tick(float DeltaSeconds) override;
   UPROPERTY(EditAnywhere)
     UBoxComponent *Trigger;
@@ -33,7 +33,8 @@ public:
     bool NeedKey;
   UPROPERTY(EditAnywhere, Category = Tower)
     FLinearColor ColorKey;
-
+  UPROPERTY(EditAnywhere, Category = Tower)
+    float TimeRunes;
   UPROPERTY(EditAnywhere)
     UMaterialBillboardComponent *EffectsBB;
 
@@ -44,10 +45,14 @@ public:
   void RestoreInitialState();
 private:
   UMaterialInstanceDynamic *TowerLightMaterial;
+  UMaterialInstanceDynamic *TowerEntranceMaterial;
   UMaterialInstanceDynamic *TowerRunesMaterial;
   UMaterialInstanceDynamic *MaterialBB;
 
   bool m_startVictory;
   float m_timeToFinish;
   float m_elapsedTime;
+  float m_elapsedTimeRunes;
+  FLinearColor m_origin;
+  FLinearColor m_target;
 };

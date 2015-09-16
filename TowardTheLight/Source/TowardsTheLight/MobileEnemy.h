@@ -11,8 +11,8 @@ class APlayerOvi;
 UCLASS()
 class TOWARDSTHELIGHT_API AMobileEnemy : public AStaticEnemy
 {
-	GENERATED_BODY()
-  TScriptDelegate<FWeakObjectPtr> m_delegate;
+  GENERATED_BODY()
+    TScriptDelegate<FWeakObjectPtr> m_delegate;
 
 private:
 
@@ -45,6 +45,7 @@ private:
   bool m_enableGravity;
   APlayerOvi *m_player;
   FVector m_lastPosition;
+  FVector m_nextPosition;
 
   //kill variables
   int m_tickCounter;
